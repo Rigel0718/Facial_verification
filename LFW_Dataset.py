@@ -5,7 +5,7 @@ import random
 import cv2 
 
 def preprocess(img) :
-    img = cv2.resize(src=img, dsize=(100,100))
+    img = cv2.resize(src=img, dsize=(250,250))
     img = img / 255.0
     return img
 
