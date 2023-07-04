@@ -17,8 +17,7 @@ def img_loader(path) :
         print('Cannot load image' + path)
 
 class CASIAWebFace(data.Dataset):
-    def __init__(self, root, file_path, transform=None, loader=img_loader):
-        self.root = root
+    def __init__(self, file_path, transform=None, loader=img_loader):
         self.transform = transform
         self.loader = loader
 
@@ -37,5 +36,19 @@ class CASIAWebFace(data.Dataset):
         self.class_nums = len(np.unique(self.label_list))  # label 중복제거
         print("dataset size: ", len(self.image_list), '/','number_of_class', self.class_nums)
 
+    def __getitem__(self, index) :
+        img_path = self.image_list[index]
+        label = self.label_list[index]
 
+        img = self.loader(img_path)
+
+        if self.transform is not None :
+            img = self.transform(img)
+        else :
+            img = torch.from_numpy(img)
+        
+        return img, label
+
+    def __len__(self) :
+        return len(self.image_list)
 
