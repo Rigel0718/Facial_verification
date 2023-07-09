@@ -15,3 +15,10 @@ def distance(embedding1, embedding2, distance_metric='euclidian') :
     
     return dist
 
+def calculate_roc(thresholds, embedding1, embedding2, actual_issame, distance_metric, ss) :
+    assert (embedding1.shape[0]==embedding2.shape[0])
+    assert (embedding1.shape[1]==embedding2.shape[1])
+    nrof_pairs = min(len(actual_issame), embedding1.shape[0])
+    nrof_thresholds = len(thresholds)
+
+    tprs = np.zeros((nrof))
