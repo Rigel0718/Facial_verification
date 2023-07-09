@@ -18,8 +18,7 @@ def get_test_path(TEST_FILE_PATH, label) :
             else :
                 negative_image.append(img_path)
     
-    test_num = len(positive_image)
-    negative_path_num = np.random.choice(len(negative_image), test_num) 
+    negative_path_num = np.random.choice(len(negative_image), len(positive_image)) 
     test_negative_image = []
 
     for idx in negative_path_num :
@@ -53,12 +52,12 @@ def get_images_labels(FILE_PAtH) :
 class Crawling_Dataset(Dataset) :
     def __init__(self, Enrolled_FILE_PATH, TEST_FILE_PATH, transforms=None) :
         _enrolled_file_path, _labels = get_images_labels(Enrolled_FILE_PATH)
-        _test_file_path, _test_labels = get_images_labels(TEST_FILE_PATH)
         
         self.enrolled_file_path = _enrolled_file_path
         self.name_labels = _labels
         self.num_labels_dict = labels_NAME2NUM(_labels)
         self.transforms = transforms
+        self.test_file_path = TEST_FILE_PATH
 
     def __len__(self) :
         return len(self.enrolled_file_path)
@@ -75,6 +74,14 @@ class Crawling_Dataset(Dataset) :
         else :
             img = torch.from_numpy(img)
         
+        positive_image_path, negative_image_path = get_test_path(self.test_file_path,image_label)
+
+        result = {'enrolled_image' : img,
+                  'positive_image_path' : positive_image_path,
+                  'negative_image_path' : negative_image_path,
+                  'image_label' : image_label}
+        
+        return result
 
 
 
