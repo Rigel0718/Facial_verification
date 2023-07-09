@@ -9,17 +9,20 @@ import time
 from tqdm.auto import tqdm
 import wandb
 
-from Dataset import CASIAWebFace
+from .WebFace_Dataset import CASIAWebFace
 from margin import ArcMarginProduct
 from arcFacenet import SEResNet_IR
 
+# setting
 save_file_name = 'Test_first'
 train_data_path = 'file_path = /opt/ml/data/CASIA_WEBFAECE/CASIA-WebFace_crop'
 batch_size = 32
-total_epoch = 150
+total_epoch = 10
+root = '/opt/ml/result'
+
 
 def save_model(model, file_name='test_model.pt'):
-    output_path = os.path.join(SAVED_DIR, file_name)
+    output_path = os.path.join(root, file_name)
     torch.save(model, output_path)
 
 def train() :
@@ -45,16 +48,16 @@ def train() :
 
 
 
+    model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
     margin = ArcMarginProduct(in_feature=128, out_feature=trainset.class_nums, s=32.0)
-    net = SEResNet_IR(50, feature_dim=128, mode='se_ir')
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer_ft = optim.SGD([
-        {'params': net.parameters(), 'weight_decay': 5e-4},
+        {'params': model.parameters(), 'weight_decay': 5e-4},
         {'params': margin.parameters(), 'weight_decay': 5e-4}
         ], lr=0.1, momentum=0.9, nesterov=True)
     exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[6, 11, 16], gamma=0.1)
 
-    net = net.to(device)
+    model = model.to(device)
     margin = margin.to(device)
 
     best_lfw_acc = 0.0
@@ -63,14 +66,13 @@ def train() :
 
     for epoch in tqdm(range(1, total_epoch + 1), leave=True) :
         exp_lr_scheduler.step()
-        net.train()
+        model.train()
 
-        since = time.time()
         for data in trainloader :
             img, label = data[0].to(device), data[1].to(device) 
             optimizer_ft.zero_grad()
             
-            feature = net(img)
+            feature = model(img)
             output = margin(feature, label)
             total_loss = criterion(output, label)
             total_loss.backward()
@@ -84,7 +86,10 @@ def train() :
                 correct = (np.array(predict.cpu()) == np.array(label.data.cpu())).sum()
 
             # save_model
-            
+
+            # vali_lfw
+            model.eval()
+
                 
 
             
