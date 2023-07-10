@@ -46,10 +46,12 @@ def get_test_path(TEST_FILE_PATH, label) :
 
 
 def labels_NAME2NUM(set_img_label):
-    label_dict = {}
+    label_key_NUM_dict = {}
+    label_key_dict = {}
     for i, key in enumerate(set_img_label) :
-        label_dict[i] = key
-    return label_dict
+        label_key_NUM_dict[i] = key
+        label_key_dict[key] = i
+    return label_key_NUM_dict, label_key_dict
 
 
 def get_images_labels(FILE_PAtH) :
@@ -85,7 +87,7 @@ class Crawling_Dataset(Dataset) :
         self.enrolled_file_path = _enrolled_file_path
         self.name_labels = _labels
         self.num_labels = len(self.name_labels)
-        self.num_labels_dict = labels_NAME2NUM(_labels)
+        self.num_labels_dict, self.name_labels_dict = labels_NAME2NUM(_labels)
         self.transforms = transforms
         self.test_file_path = TEST_FILE_PATH
         self.loader = loader
@@ -93,8 +95,11 @@ class Crawling_Dataset(Dataset) :
     def __len__(self) :
         return len(self.enrolled_file_path)
     
-    def get_label_dict(self) :
+    def get_label_dict_NUM2NAME(self) :
         return self.num_labels_dict
+    
+    def get_label_dict_NAME2NUM(self) :
+        return self.name_labels_dict
     
     def __getitem__(self, index) :
         image_path = self.enrolled_file_path[index]
@@ -108,27 +113,52 @@ class Crawling_Dataset(Dataset) :
         else :
             img = torch.from_numpy(img)
         
-        img = img.unsqueeze(0)
+        img = img.unsqueeze(0)  # block들이 4차원이기 때문에 맞춰주기 위해 (3, 224, 224) -> (1, 3, 224, 224)
         
         positive_image_path, negative_image_path = get_test_path(self.test_file_path,image_label)
 
         positive_image_block = image_path2block(positive_image_path, transforms=self.transforms)
         negative_image_block = image_path2block(negative_image_path, transforms=self.transforms)
-        # print(positive_image_block.shape)
-        # print(negative_image_block.shape)
-        # print(img.shape)
 
-        # result = {'enrolled_image' : img,
-        #           'positive_image_path' : positive_image_path,
-        #           'negative_image_path' : negative_image_path,
-        #           'image_label' : image_label,
-        #           'image_path' : image_path,
-        #           'test' : filename}
-        # print(type(positive_image_path), type(negative_image_path), type(image_label))
-        # print(positive_image_path)
-        # print(result)
         return img, image_label, positive_image_block, negative_image_block
 
+
+class Crawling_Nomal_Dataset(Dataset) : 
+    def __init__(self, FILE_PATH, transforms=None, loader=img_loader) :
+        _image_paths, _labels = get_images_labels(FILE_PATH)
+
+
+        self.image_file_paths = _image_paths
+        self.name_labels = _labels
+        self.nrof_labels = len(self.name_labels)
+        self.transforms = transforms
+        self.num_labels_dict, self.name_labels_dict = labels_NAME2NUM(_labels)
+        self.loader = loader
+
+    def __len__(self) :
+        return len(self.image_file_paths)
+    
+    def get_label_dict_NUM2NAME(self) :
+        return self.num_labels_dict
+    
+    def get_label_dict_NAME2NUM(self) :
+        return self.name_labels_dict
+
+    def __getitem__(self, index) :
+        image_path = self.image_file_paths[index]
+        filename = image_path.split('/')[-1]
+        image_label = filename.split('_')[-2]
+        
+        img = self.loader(image_path)
+
+        label_num = self.name_labels_dict[image_label]
+
+        if self.transforms is not None :
+            img = self.transforms(img)
+        else :
+            img = torch.from_numpy(img)
+        
+        return img, image_label, label_num
 
 if __name__ == '__main__' :
     train_path = '/opt/ml/data/celeb_30/cut_train'
@@ -140,12 +170,11 @@ if __name__ == '__main__' :
         transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)) # range [0.0, 1.0] -> [-1.0,1.0]
     ])
 
-    dataset = Crawling_Dataset(Enrolled_FILE_PATH=train_path, TEST_FILE_PATH=test_path, transforms=transform)
-    train_lodaer = data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
-    # print(len(dataset))
-    for a,b,c,d in train_lodaer :
+    dataset = Crawling_Nomal_Dataset(train_path,transforms=transform)
+    train_lodaer = data.DataLoader(dataset, batch_size=8, shuffle=True, num_workers=1, drop_last=False)
+    print(len(dataset))
+    for a,b,c in train_lodaer :
         print(a.shape)
-        print(b)
-        print(c.shape)
-        print(d.shape)
+        print(b, c)
+        print(c[1])
         break
