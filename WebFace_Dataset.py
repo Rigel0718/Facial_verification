@@ -35,6 +35,12 @@ class CASIAWebFace(data.Dataset):
         self.label_list = label_list
         self.class_nums = len(np.unique(self.label_list))  # label 중복제거
         print("dataset size: ", len(self.image_list), '/','number_of_class : ', self.class_nums)
+    
+    def __len__(self) :
+        return len(self.image_list)
+    
+    def get_classes(self) :
+        return len(self.class_nums)
 
     def __getitem__(self, index) :
         img_path = self.image_list[index]
@@ -67,4 +73,5 @@ if __name__ == '__main__' :
     print(len(dataset))
     for _data in train_lodaer :
         print(_data[0].shape)  # dataset 확인
+        print(_data[1])
         break

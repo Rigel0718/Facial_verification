@@ -158,7 +158,7 @@ class Crawling_Nomal_Dataset(Dataset) :
         else :
             img = torch.from_numpy(img)
         
-        return img, image_label, label_num
+        return img, [image_path, label_num]
 
 if __name__ == '__main__' :
     train_path = '/opt/ml/data/celeb_30/cut_train'
