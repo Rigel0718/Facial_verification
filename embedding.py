@@ -26,6 +26,14 @@ def img_loader(path) :
     except IOError :
         print('Cannot load image' + path)
 
+def evaluate_model(func):
+    def wrapper(*args, **kwargs):
+        self = args[0]
+        self.embedding_vector.model.eval()
+        with torch.no_grad():
+            return func(*args, **kwargs)
+    return wrapper
+
 class Embedding_vector :
     def __init__(self, model, transform=None) :
         self.transform = transform
@@ -60,13 +68,35 @@ class Embedding_vector :
         return embedding
     
 
+## TODO data_loader가있는 경우 transform이 되어있는데, 굳이 embedding_vector에서 정의할 필요가 없지 않나.. 이걸 구분해주는 코드 필요
+
 class Embeddings_Manager :
-    def __init__(self, file_path, embedding_vector: Embedding_vector) :
+    def __init__(self, file_path, embedding_vector: Embedding_vector, dataloader = None) :
         self.functions = []
         self.file_path = file_path
         self.embedding_vector = embedding_vector
+        self.data_loader = dataloader
 
-    def 
+    @evaluate_model   # model.eval(), torch.no_grad() wrapping한 데코레이터
+    def get_path_embedding_dict(self) :
+        path_embedding_dict = {}
+
+        if self.data_loader is  None :    # dataloader를 특별히 지정하지 않은 경우
+            dataset = Crawling_Nomal_Dataset(self.file_path, transforms=self.embedding_vector.transform)
+            data_loader = data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
+        else :
+            data_loader = self.data_loader
+        
+        for feature, path_label_list in data_loader :
+            # print(path_label_list)
+            embeddings = self.embedding_vector(feature=feature)
+            key = path_label_list[0][0]
+            value = embeddings
+            path_embedding_dict[key] = value
+
+        return path_embedding_dict
+
+
     
 
         
