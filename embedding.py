@@ -77,6 +77,25 @@ class Embeddings_Manager :
         self.embedding_vector = embedding_vector
         self.data_loader = dataloader
 
+    def get_label_per_path_dict(self) :
+        identities = defaultdict(lambda : list())
+        # dict = {label1 : [image_path_1.jpg,image_path_2.jpg,....],
+        #        label2 : [image_path_1.jpg,image_path_2.jpg,....],...}
+
+        if self.data_loader is  None :    # dataloader를 특별히 지정하지 않은 경우
+            dataset = Crawling_Nomal_Dataset(self.file_path, transforms=self.embedding_vector.transform)
+            data_loader = data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
+        else :
+            data_loader = self.data_loader
+
+        for img,  path_label in data_loader :
+            # print(img, path_label)
+            img_path = path_label[0][0]
+            img_label = path_label[1].tolist()[0]
+            # print(img_path, img_label, sep='\n')
+            identities[img_label].append(img_path)
+        return identities
+
     @evaluate_model   # model.eval(), torch.no_grad() wrapping한 데코레이터
     def get_path_embedding_dict(self) :
         path_embedding_dict = {}
@@ -95,8 +114,5 @@ class Embeddings_Manager :
             path_embedding_dict[key] = value
 
         return path_embedding_dict
-
-
-    
 
         
