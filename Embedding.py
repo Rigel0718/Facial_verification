@@ -37,17 +37,17 @@ class Embedding_vector :
         self.model = model
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    def __getitem__(self, image_path=None, feature=None) :
+    def get_embedding(self, image_path=None, feature=None) :
         # image_path로 기입된 경우와 image자체로 기입된 경우를 나눈다.
         if image_path is not None :
             img = img_loader(image_path)
         else : 
             img = feature
         
-        if self.transform is not None : 
-            img = self.transform(img)
-        else :
-            img = torch.from_numpy(img)
+        # if self.transform is not None : 
+        #     img = self.transform(img)
+        # else :
+        #     img = torch.from_numpy(img)
 
         # dataset을 거치지 않고 나온 이미지는 3차원이기 때문에 모델에 넣어줄 수 있게 4차원 변환
         if len(img.shape) == 3:         
@@ -105,7 +105,7 @@ class Embeddings_Manager :
         
         for feature, path_label_list in data_loader :
             # print(path_label_list)
-            embeddings = self.embedding_vector(feature=feature)
+            embeddings = self.embedding_vector.get_embedding(feature=feature)
             key = path_label_list[0][0]
             value = embeddings
             path_embedding_dict[key] = value
