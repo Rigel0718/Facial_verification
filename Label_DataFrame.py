@@ -9,7 +9,6 @@ import torch.utils.data as data
 from facenet_pytorch import MTCNN, fixed_image_standardization, InceptionResnetV1
 import math
 import tqdm as tqdm
-import matplotlib.pyplot as plt
 from PIL import Image
 from collections import defaultdict
 from torchvision.transforms import Resize
@@ -60,4 +59,5 @@ class Label_DataFrame :
     def concate(self) :
         df = pd.concat([self.positives, self.negatives]).reset_index(drop = True)
         return df
+        
     
