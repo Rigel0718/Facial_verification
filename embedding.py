@@ -7,13 +7,10 @@ import os
 import numpy as np
 from torchvision import transforms
 import torch.utils.data as data
-from facenet_pytorch import MTCNN, fixed_image_standardization
 import math
-import tqdm as tqdm
-import matplotlib.pyplot as plt
 from PIL import Image
 from collections import defaultdict
-from torchvision.transforms import Resize
+
 
 def img_loader(path) :
     try : 
