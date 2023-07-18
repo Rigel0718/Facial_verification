@@ -19,31 +19,49 @@ from Embedding import Embedding_vector, Embeddings_Manager
 from Label_DataFrame import Label_DataFrame
 from sklearn.metrics import confusion_matrix
 
-def calculate_mean_std(df) :
+def calculate_mean_std(df, do_print=True) :
     p_mean = round(df[df.decision == "Yes"].distance.mean(), 4)
     p_std = round(df[df.decision == "Yes"].distance.std(), 4)
     n_mean = round(df[df.decision == "No"].distance.mean(), 4)
     n_std = round(df[df.decision == "No"].distance.std(), 4)
-    print(p_mean, p_std)
-    print(n_mean, n_std)
+    if do_print :
+        print(p_mean, p_std)
+        print(n_mean, n_std)
     return p_mean, p_std, n_mean, n_std
 
 def get_threshold(p_mean, p_std, sigma=1) :
     threshold = round(p_mean + sigma * p_std, 4)
     return threshold
 
-def get_statistic(df) :
+def fine_tuning_threshold(model_df : Label_DataFrame,df, sigma=1) :
+    p_mean, p_std, n_mean, n_std = calculate_mean_std(df, False)
+    start = p_mean
+    end = n_mean
+    ths = np.arange(start, end, 0.001)
+    accuracy = 0
+    threshold = start
+    for t in ths :
+        prediction_df = model_df.get_prediction_df(threshold=t)
+        acc, recall, f1, precision = get_statistic(prediction_df, False)
+        if accuracy < acc :
+            accuracy = acc
+            threshold = t
+    return threshold
+
+
+def get_statistic(df, do_print=True) :
     cm = confusion_matrix(df.decision.values, df.prediction.values)
-    print(cm)
     tn, fp, fn, tp = cm.ravel()
     recall = tp / (tp + fn)
     precision = tp / (tp + fp)
     accuracy = (tp + tn)/(tn + fp +  fn + tp)
     f1 = 2 * (precision * recall) / (precision + recall)
-    print('acc    : ', accuracy)
-    print('recall : ', recall)
-    print('f1     : ', f1)
-    print('precision : ', precision)
+    if do_print :
+        print(cm)
+        print('acc    : ', accuracy)
+        print('recall : ', recall)
+        print('f1     : ', f1)
+        print('precision : ', precision)
     return accuracy, recall, f1, precision
 
 def validation(model, vali_data_loader, threshold=None, get_df=False) :
@@ -61,7 +79,7 @@ def validation(model, vali_data_loader, threshold=None, get_df=False) :
 
     p_mean, p_std, n_mean, n_std = calculate_mean_std(model_inference_df)
     if threshold is None :
-        threshold = get_threshold(p_mean, p_std, sigma=1)
+        threshold = fine_tuning_threshold(model_df,model_inference_df, sigma=1)
         print('threshold : ', threshold)
     else :
         print('threshold : ', threshold)
