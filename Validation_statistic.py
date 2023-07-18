@@ -46,7 +46,7 @@ def get_statistic(df) :
     print('precision : ', precision)
     return accuracy, recall, f1, precision
 
-def validation(model, vali_data_loader, get_df=False) :
+def validation(model, vali_data_loader, threshold=None, get_df=False) :
 
     model_vector= Embedding_vector(model=model)
     model_vector_imform = Embeddings_Manager(embedding_vector=model_vector, dataloader=vali_data_loader)
@@ -60,6 +60,11 @@ def validation(model, vali_data_loader, get_df=False) :
     model_inference_df = model_df.get_inference_df(model_path2embedding)
 
     p_mean, p_std, n_mean, n_std = calculate_mean_std(model_inference_df)
+    if threshold is None :
+        threshold = get_threshold(p_mean, p_std, sigma=1)
+        print('threshold : ', threshold)
+    else :
+        print('threshold : ', threshold)
     threshold = get_threshold(p_mean, p_std, sigma=1)
     facenet_prediction_df = model_df.get_prediction_df(threshold=threshold)
 
