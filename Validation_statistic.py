@@ -46,10 +46,10 @@ def get_statistic(df) :
     print('precision : ', precision)
     return accuracy, recall, f1, precision
 
-def validation(model, vali_data_loader, test_path, get_df=False) :
+def validation(model, vali_data_loader, get_df=False) :
 
     model_vector= Embedding_vector(model=model)
-    model_vector_imform = Embeddings_Manager(file_path=test_path, embedding_vector=model_vector, dataloader=vali_data_loader)
+    model_vector_imform = Embeddings_Manager(embedding_vector=model_vector, dataloader=vali_data_loader)
     model_identities = model_vector_imform.get_label_per_path_dict()
     model_path2embedding = model_vector_imform.get_path_embedding_dict()
 
@@ -85,7 +85,7 @@ if __name__ == '__main__' :
     test_dataset = Crawling_Nomal_Dataset(test_path, transforms=transform)
     test_data_loader = data.DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
     
-    validation(model=facenet, vali_data_loader=test_data_loader, test_path=test_path)
+    validation(model=facenet, vali_data_loader=test_data_loader)
 
 
 
