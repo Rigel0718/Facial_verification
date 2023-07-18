@@ -1,17 +1,5 @@
-from torch.utils.data import Dataset, DataLoader
-from Crawling_Dataset import Crawling_Nomal_Dataset
-import torch
-import cv2 
-import os
 import numpy as np
-from torchvision import transforms
-import torch.utils.data as data
-from facenet_pytorch import MTCNN, fixed_image_standardization, InceptionResnetV1
 import math
-import tqdm as tqdm
-from PIL import Image
-from collections import defaultdict
-from torchvision.transforms import Resize
 import pandas as pd
 import itertools
 # from cheff import bring
@@ -70,7 +58,7 @@ class Label_DataFrame :
         negatives = pd.DataFrame(negatives, columns = ["file_x", "file_y"])
         negatives["decision"] = "No"
         self.negatives = negatives
-        return negative
+        return negatives
     
     def concate(self) :
         df = pd.concat([self.positives, self.negatives]).reset_index(drop = True)
@@ -82,7 +70,7 @@ class Label_DataFrame :
         for row in self.data_frame.itertuples() :
             embedding_1 = path2embedding[row[1]]
             embedding_2 = path2embedding[row[2]]
-            dist = round(distance(embedding_1, embedding_2, 1)[0],4)
+            dist = round(distance(embedding_1, embedding_2, 0)[0],4)
         # print(dist)
             distance_list.append(dist)
         

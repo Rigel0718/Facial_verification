@@ -161,8 +161,8 @@ class Crawling_Nomal_Dataset(Dataset) :
         return img, [image_path, label_num]
 
 if __name__ == '__main__' :
-    train_path = '/opt/ml/data/celeb_30/cut_train'
-    test_path = '/opt/ml/data/celeb_30/cut_test'
+    train_path = '/opt/ml/data/celeb/cut_train'
+    test_path = '/opt/ml/data/celeb/cut_test'
 
     transform = transforms.Compose([
         np.float32,

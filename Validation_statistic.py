@@ -46,7 +46,7 @@ def get_statistic(df) :
     print('precision : ', precision)
     return accuracy, recall, f1, precision
 
-def validation(model, vali_data_loader, test_path) :
+def validation(model, vali_data_loader, test_path, get_df=False) :
 
     model_vector= Embedding_vector(model=model)
     model_vector_imform = Embeddings_Manager(file_path=test_path, embedding_vector=model_vector, dataloader=vali_data_loader)
@@ -64,8 +64,10 @@ def validation(model, vali_data_loader, test_path) :
     facenet_prediction_df = model_df.get_prediction_df(threshold=threshold)
 
     accuracy, recall, f1, precision = get_statistic(facenet_prediction_df)
-
-    return accuracy, recall, f1, precision
+    if get_df :
+        return model_inference_df, accuracy, recall, f1, precision
+    else :
+        return accuracy, recall, f1, precision
 
 if __name__ == '__main__' :
     model_path = '/opt/ml/insightface/recognition/arcface_torch/work_dirs/wf4m_r50_epoch20/model.pt'
