@@ -68,7 +68,7 @@ class Embedding_vector :
 ## TODO data_loader가있는 경우 transform이 되어있는데, 굳이 embedding_vector에서 정의할 필요가 없지 않나.. 이걸 구분해주는 코드 필요
 
 class Embeddings_Manager :
-    def __init__(self, file_path, embedding_vector: Embedding_vector, dataloader = None) :
+    def __init__(self, embedding_vector: Embedding_vector,file_path=None, dataloader = None) :
         self.functions = []
         self.file_path = file_path
         self.embedding_vector = embedding_vector
