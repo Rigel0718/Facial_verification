@@ -18,4 +18,6 @@ print(x.shape) # 5명인 경우 Tensor [5, 3, 160, 160]
 facenet_model = InceptionResnetV1(classify=False, pretrained='vggface2')
 
 embedding_facenet = Embedding_vector(model=facenet_model)
+embdding_vectors = embedding_facenet.get_embedding(feature=x)
+print(embdding_vectors.shape)
 

@@ -111,5 +111,6 @@ class Embeddings_Manager :
             path_embedding_dict[key] = value
 
         return path_embedding_dict
+    
 
         
