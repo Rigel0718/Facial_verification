@@ -15,8 +15,8 @@ from collections import defaultdict
 from torchvision.transforms import Resize
 # from cheff import bring
 
-from Embedding import Embedding_vector, Embeddings_Manager
-from Label_DataFrame import Label_DataFrame
+from Facial_verification.utils.Embedding import Embedding_vector, Embeddings_Manager
+from Facial_verification.utils.Label_DataFrame import Label_DataFrame
 from sklearn.metrics import confusion_matrix
 
 def calculate_mean_std(df, do_print=True) :
