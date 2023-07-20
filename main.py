@@ -1,6 +1,6 @@
 from facenet_pytorch import MTCNN, InceptionResnetV1, fixed_image_standardization
-from ..utils.Embedding import Embedding_vector, Embeddings_Manager
-from ..utils.Label_DataFrame import Label_DataFrame
+from utils.Embedding import Embedding_vector, Embeddings_Manager
+from utils.Label_DataFrame import Label_DataFrame
 import cv2
 import numpy as np
 
