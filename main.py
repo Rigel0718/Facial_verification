@@ -18,7 +18,7 @@ def img_loader(path) :
 detection_model = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6,0.7,0.7], factor= 0.709, keep_all=True)
 img_path = '/opt/ml/data/example/group_less.jpg'
 img = img_loader(img_path)
-x = MTCNN(img)
+x = detection_model(img)
 print(x.shape)
 
 extraction_model = InceptionResnetV1(classify=False, pretrained='vggface2')
