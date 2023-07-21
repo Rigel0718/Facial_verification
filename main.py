@@ -49,9 +49,9 @@ def get_embedding_vector_store_dict(store : dict, label, features : torch.Tensor
 
 
 # album이 폴더 형태로 정리 되어있을 때
-def make_album(file_path, model : Embedding_vector, detection_model : MTCNN) :
+def make_album_folder(folder_path, model : Embedding_vector, detection_model : MTCNN) :
     album_dict = dict()
-    for dirname, _, filenames in os.walk(file_path) :
+    for dirname, _, filenames in os.walk(folder_path) :
         for filename in filenames :
             image_path = os.path.join(dirname, filename)
             feature = get_detected_images(image_path, detection_model=detection_model)
@@ -60,6 +60,15 @@ def make_album(file_path, model : Embedding_vector, detection_model : MTCNN) :
                 continue
             get_embedding_vector_store_dict(album_dict, image_path, feature, model)
     return album_dict   # {image_1.jpg : (n,512),}
+
+
+# album(DB)이 존재한다고 보고, image가 하나씩 들어올 때
+def add_file_DB(file_id, store_dict ,model : Embedding_vector, detection_model : MTCNN) :
+    feature = get_detected_images(file_id, detection_model=detection_model)
+    if feature is None :
+        print(file_id)
+    else :
+        get_embedding_vector_store_dict(store_dict, file_id, feature, model)
 
 def get_result (key, enrolled_image, threshold, album : dict) :
     key_image_set = set()
@@ -80,7 +89,7 @@ def get_result (key, enrolled_image, threshold, album : dict) :
 
 facenet_model.eval()
 with torch.no_grad():
-    album = make_album(file_path, embedding_facenet, detection_model)
+    album = make_album_folder(file_path, embedding_facenet, detection_model)
     features = get_detected_images(img_path, single_detection_model)
 
     label = 'IU'  # 이미지 등록할 때 받아오는 키
