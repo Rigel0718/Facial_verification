@@ -89,4 +89,8 @@ with torch.no_grad():
 
     label = 'IU'  # 이미지 등록할 때 받아오는 키
     enrolled_image = dict()  # 로그인 사람 마다 불러옴
-    
+    get_image(enrolled_image, label, features, model=embedding_facenet)
+    final_classification = get_result(label, threshold, album)
+
+print(album.keys())
+print('final : ', final_classification)
