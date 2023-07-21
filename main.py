@@ -70,9 +70,10 @@ def add_file_DB(file_id, store_dict ,model : Embedding_vector, detection_model :
     else :
         get_embedding_vector_store_dict(store_dict, file_id, feature, model)
 
-def get_result (key, enrolled_image, threshold, album : dict) :
+
+def get_result (key, enrolled_DB, threshold, album : dict) :
     key_image_set = set()
-    key_image_embedding = enrolled_image[key]
+    key_image_embedding = enrolled_DB[key]
     for image in album.keys() :
         embeddings = album[image] # (n, 512)
         # for embedding in range(embeddings.shape[0]) :
@@ -90,12 +91,12 @@ def get_result (key, enrolled_image, threshold, album : dict) :
 facenet_model.eval()
 with torch.no_grad():
     album = make_album_folder(file_path, embedding_facenet, detection_model)
-    features = get_detected_images(img_path, single_detection_model)
+    
 
     label = 'IU'  # 이미지 등록할 때 받아오는 키
-    enrolled_image = dict()  # 로그인 사람 마다 불러옴
-    get_embedding_vector_store_dict(enrolled_image, label, features, model=embedding_facenet)
-    final_classification = get_result(label, enrolled_image, threshold, album)
+    enrolled_DB = dict()  # 찾을 사람을 저장하는 dictionary 
+    add_file_DB(img_path, enrolled_DB, embedding_facenet, single_detection_model)
+    final_classification = get_result(label, enrolled_DB, threshold, album)
 
 print(album.keys())
 print('final : ', final_classification)
