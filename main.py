@@ -7,13 +7,6 @@ import torch
 from torchvision import transforms
 import os
 
-
-transform = transforms.Compose([
-        np.float32,
-        transforms.ToTensor(),  # range [0, 255] -> [0.0, 1.0]
-        fixed_image_standardization
-    ])
-
 img_path = '/opt/ml/data/example/enrolled/iu_base.jpg'
 # img_path = '/opt/ml/data/example/enrolled/one_bin.jpeg'
 file_path = '/opt/ml/data/example/album'
