@@ -172,9 +172,10 @@ if __name__ == '__main__' :
 
     dataset = Crawling_Nomal_Dataset(train_path,transforms=transform)
     train_lodaer = data.DataLoader(dataset, batch_size=8, shuffle=True, num_workers=1, drop_last=False)
+    print(dataset[1][0].shape)
     print(len(dataset))
-    for a,b,c in train_lodaer :
+    for a,b in train_lodaer :
         print(a.shape)
-        print(b, c)
-        print(c[1])
+        print(b)
+        # print(c[1])
         break

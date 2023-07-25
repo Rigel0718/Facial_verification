@@ -46,13 +46,16 @@ class Embedding_vector :
         
         # if self.transform is not None : 
         #     img = self.transform(img)
+        #     print('yes')
+        #     print(type(img))
         # else :
         #     img = torch.from_numpy(img)
 
+        
         # dataset을 거치지 않고 나온 이미지는 3차원이기 때문에 모델에 넣어줄 수 있게 4차원 변환
         if len(img.shape) == 3:         
             img = img.unsqueeze(0)
-         
+        
         img = img.to(self.device)
 
         # 만약 model이 GPU연산이 안되어있다면,
@@ -111,5 +114,4 @@ class Embeddings_Manager :
             path_embedding_dict[key] = value
 
         return path_embedding_dict
-
         
