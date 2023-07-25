@@ -9,7 +9,7 @@ import time
 from tqdm.auto import tqdm
 import wandb
 
-from .WebFace_Dataset import CASIAWebFace
+from .dataset.WebFace_Dataset import CASIAWebFace
 from margin import ArcMarginProduct
 from arcFacenet import SEResNet_IR
 
