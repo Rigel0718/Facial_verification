@@ -10,8 +10,8 @@ import os
 img_path = '/opt/ml/data/example/enrolled/iu_base.jpg'
 # img_path = '/opt/ml/data/example/enrolled/one_bin.jpeg'
 file_path = '/opt/ml/data/example/album'
-# threshold = 0.3046
-threshold = 0.847
+threshold = 0.3046  # cosine threshold
+# threshold = 0.847   # euclidian threshold
 
 # detection model 생성
 # keep_all을 제외하면 default
@@ -58,9 +58,7 @@ def make_album_folder(folder_path, model : Embedding_vector, detection_model : M
 # album(DB)이 존재한다고 보고, image가 하나씩 들어올 때
 def add_file_DB(file_id, store_dict ,model : Embedding_vector, detection_model : MTCNN) :
     feature = get_detected_images(file_id, detection_model=detection_model)
-    if feature is None :
-        print(file_id)
-    else :
+    if feature is not None :
         get_embedding_vector_store_dict(store_dict, file_id, feature, model)
 
 
@@ -69,13 +67,8 @@ def get_result (key, enrolled_DB, threshold, album : dict) :
     key_image_embedding = enrolled_DB[key]
     for image in album.keys() :
         embeddings = album[image] # (n, 512)
-        # for embedding in range(embeddings.shape[0]) :
-        dis = distance(key_image_embedding, embeddings, 0)
-        print('bbbbb : ', dis.shape)
-        print(image)
-        print(dis, type(dis))
+        dis = distance(key_image_embedding, embeddings, 1)
         result = dis <= threshold
-        print('cccc : ', result)
         if any(result) :
             key_image_set.add(image)
 
@@ -83,13 +76,19 @@ def get_result (key, enrolled_DB, threshold, album : dict) :
 
 facenet_model.eval()
 with torch.no_grad():
+    # 폴더 전체를 album으로 만들어서 반환하고 싶은 경우
     album = make_album_folder(file_path, embedding_facenet, detection_model)
+    
+    # 만약에 파일로 album을 하나씩 추가하고 싶으면
+    file_id = ''  # DB로 저장될 file_id
+    DB = '' # 따로 불러올 album DB
+    add_file_DB(file_id, DB ,embedding_facenet, detection_model)
     
 
     label = 'IU'  # 이미지 등록할 때 받아오는 키
     enrolled_DB = dict()  # 찾을 사람을 저장하는 dictionary 
     add_file_DB(img_path, enrolled_DB, embedding_facenet, single_detection_model)
-    final_classification = get_result(label, enrolled_DB, threshold, album)
+final_classification = get_result(label, enrolled_DB, threshold, album)
 
 print(album.keys())
 print('final : ', final_classification)
