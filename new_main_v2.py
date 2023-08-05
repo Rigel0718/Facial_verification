@@ -43,7 +43,7 @@ def get_embedding(model, image_path=None, feature=None) :
         else : 
             img = feature
 
-        # dataset을 거치지 않고 나온 이미지는 3차원이기 때문에 모델에 넣어줄 수 있게 4차원 변환
+        # single 이미지는 3차원이기 때문에 모델에 넣어줄 수 있게 4차원 변환
         if len(img.shape) == 3:         
             img = img.unsqueeze(0)
             
@@ -109,7 +109,9 @@ threshold = 0.3046  # cosine threshold
 facenet_model.eval()
 with torch.no_grad():
     file_path = ['/opt/ml/data/example/album/2_ol.jpg', '/opt/ml/data/example/album/dog_1.jpg', '/opt/ml/data/example/album/group_less.jpg',
-                '/opt/ml/data/example/album/iu_1.jpg', '/opt/ml/data/example/album/iu_kara.jpg']
+                '/opt/ml/data/example/album/iu_1.jpg', '/opt/ml/data/example/album/iu_kara.jpg', '/opt/ml/data/example/album/hyojin.jpeg',
+                '/opt/ml/data/example/album/boyoung_2.jpg','/opt/ml/data/example/album/han_1.jpg','/opt/ml/data/example/album/iu_2.jpg',
+                '/opt/ml/data/example/album/huh.jpg', '/opt/ml/data/example/album/kazha.jpg','/opt/ml/data/example/album/huh_2.jpg']
     album = make_album(file_path, facenet_model, detection_model)
 
 
