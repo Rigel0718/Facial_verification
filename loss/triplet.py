@@ -35,3 +35,10 @@ def pairwise_distance_torch(embeddings, device):
     mask_offdiagonals = torch.ones((pairwise_distances.shape[0], pairwise_distances.shape[1])) - torch.diag(torch.ones(pairwise_distances.shape[0]))
     pairwise_distances = torch.mul(pairwise_distances.to(device), mask_offdiagonals.to(device))
     return pairwise_distances
+
+if __name__ == '__main__' :
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    embedding = embedding = torch.rand(4, 512).to(device)
+    
+    pairwise_distance = pairwise_distance_torch(embedding, device)
+    print(pairwise_distance)
