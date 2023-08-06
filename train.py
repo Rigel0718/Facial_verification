@@ -13,6 +13,10 @@ from .dataset.WebFace_Dataset import CASIAWebFace
 from Facial_verification.loss.margin import ArcMarginProduct
 from arcFacenet import SEResNet_IR
 
+from loss.semihardtriplet import TripletLoss
+from backbone.cbam import SEModule
+from test.Validation_statistic import validation
+
 # setting
 save_file_name = 'Test_first'
 train_data_path = 'file_path = /opt/ml/data/CASIA_WEBFAECE/CASIA-WebFace_crop'
@@ -89,6 +93,7 @@ def train() :
 
             # vali_lfw
             model.eval()
+            validation()
 
                 
 
