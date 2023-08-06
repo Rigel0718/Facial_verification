@@ -1,6 +1,6 @@
 from typing import Any
 from torch.utils.data import Dataset, DataLoader
-from Crawling_Dataset import Crawling_Nomal_Dataset
+from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 import torch
 import cv2 
 import os

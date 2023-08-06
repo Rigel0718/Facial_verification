@@ -10,7 +10,7 @@ from tqdm.auto import tqdm
 import wandb
 
 from .dataset.WebFace_Dataset import CASIAWebFace
-from margin import ArcMarginProduct
+from Facial_verification.loss.margin import ArcMarginProduct
 from arcFacenet import SEResNet_IR
 
 # setting
