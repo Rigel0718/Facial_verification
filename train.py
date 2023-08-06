@@ -1,5 +1,5 @@
 import os
-import torch.utils.data
+import torch.utils.data 
 from datetime import datetime
 import numpy as np
 import torchvision.transforms as transforms
@@ -8,6 +8,7 @@ import torch.optim as optim
 import time
 from tqdm.auto import tqdm
 import wandb
+import torch
 
 from .dataset.WebFace_Dataset import CASIAWebFace
 from Facial_verification.loss.margin import ArcMarginProduct
@@ -16,10 +17,12 @@ from arcFacenet import SEResNet_IR
 from loss.semihardtriplet import TripletLoss
 from backbone.cbam import SEModule
 from test.Validation_statistic import validation
+from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 
 # setting
 save_file_name = 'Test_first'
 train_data_path = 'file_path = /opt/ml/data/CASIA_WEBFAECE/CASIA-WebFace_crop'
+test_path = ''
 batch_size = 32
 total_epoch = 10
 root = '/opt/ml/result'
@@ -49,6 +52,9 @@ def train() :
     trainset = CASIAWebFace(train_data_path, transform=transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                               shuffle=True, num_workers=8, drop_last=False)
+    
+    test_dataset = Crawling_Nomal_Dataset(test_path, transforms=transform)
+    test_data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
 
 
 
@@ -93,7 +99,7 @@ def train() :
 
             # vali_lfw
             model.eval()
-            validation()
+            validation(model, test_data_loader)
 
                 
 
