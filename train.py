@@ -67,7 +67,7 @@ def train() :
             transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
         ])
     
-    trainset = CASIAWebFace(train_data_path, transform=transform)
+    trainset = Crawling_Nomal_Dataset(train_data_path, transform=transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                               shuffle=True, num_workers=8, drop_last=False)
     
