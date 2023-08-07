@@ -9,6 +9,7 @@ import time
 from tqdm.auto import tqdm
 import wandb
 import torch
+from torch import distributed
 
 from .dataset.WebFace_Dataset import CASIAWebFace
 from Facial_verification.loss.margin import ArcMarginProduct
@@ -27,6 +28,22 @@ test_path = ''
 batch_size = 32
 total_epoch = 10
 root = '/opt/ml/result'
+
+try:
+    rank = int(os.environ["RANK"])
+    local_rank = int(os.environ["LOCAL_RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
+    distributed.init_process_group("nccl")
+except KeyError:
+    rank = 0
+    local_rank = 0
+    world_size = 1
+    distributed.init_process_group(
+        backend="nccl",
+        init_method="tcp://127.0.0.1:12584",
+        rank=rank,
+        world_size=world_size,
+    )
 
 
 def save_model(model, file_name='test_model.pt'):
@@ -60,6 +77,11 @@ def train() :
 
 
     model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
+
+    backbone = torch.nn.parallel.DistributedDataParallel(
+        module=backbone, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
+        find_unused_parameters=True)
+    
     margin = ArcMarginProduct(in_feature=128, out_feature=trainset.class_nums, s=32.0)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer_ft = optim.SGD([
