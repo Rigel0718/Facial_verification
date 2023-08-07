@@ -15,3 +15,8 @@ def setup_seed(seed, cuda_deterministic=True):
     else:  # faster, less reproducible
         torch.backends.cudnn.deterministic = False
         torch.backends.cudnn.benchmark = True
+
+def seed_worker(_worker_id):
+    worker_seed = torch.initial_seed() % 2**32
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
