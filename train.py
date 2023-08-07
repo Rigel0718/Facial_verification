@@ -78,8 +78,8 @@ def train() :
 
     model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
 
-    backbone = torch.nn.parallel.DistributedDataParallel(
-        module=backbone, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
+    model = torch.nn.parallel.DistributedDataParallel(
+        module=model, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
         find_unused_parameters=True)
     
     margin = ArcMarginProduct(in_feature=128, out_feature=trainset.class_nums, s=32.0)
