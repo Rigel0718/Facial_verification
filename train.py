@@ -18,6 +18,7 @@ from loss.semihardtriplet import TripletLoss
 from backbone.cbam import SEModule
 from test.Validation_statistic import validation
 from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
+from utils.set_seed import setup_seed, seed_worker
 
 # setting
 save_file_name = 'Test_first'
