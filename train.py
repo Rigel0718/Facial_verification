@@ -83,6 +83,7 @@ def train() :
         find_unused_parameters=True)
     
     margin = ArcMarginProduct(in_feature=128, out_feature=trainset.class_nums, s=32.0)
+    triplet = TripletLoss(device=device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer_ft = optim.SGD([
         {'params': model.parameters(), 'weight_decay': 5e-4},
@@ -103,13 +104,18 @@ def train() :
 
         for data in trainloader :
             img, label = data[0].to(device), data[1].to(device) 
+            label_num = label[1]
             optimizer_ft.zero_grad()
             
             feature = model(img)
             output = margin(feature, label)
+            output_loss = triplet(feature, label_num)
             total_loss = criterion(output, label)
+            
+            # ouput_loss.backward()
             total_loss.backward()
             optimizer_ft.step()
+            
 
             total_iters += 1
 
