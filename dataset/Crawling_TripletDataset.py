@@ -36,7 +36,7 @@ def convert_to_df(image_file_paths) :
             img_label= filename.split('_')[-2]
             image_path_dict['img_path'].append(img_path)
             image_path_dict['class'].append(img_label)
-            
+    return image_path_dict
 
 class TripletFaceDataset(Dataset):
     def __init__(self, root_dir, training_dataset_csv_path, num_triplets, epoch, num_human_identities_per_batch=32,
