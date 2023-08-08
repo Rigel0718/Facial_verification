@@ -85,7 +85,7 @@ def train() :
         find_unused_parameters=True)
     
     margin = ArcMarginProduct(in_feature=128, out_feature=train_dataset.class_nums, s=32.0)
-    triplet = TripletLoss(device=device)
+    triplet = TripletLoss(device=device)    
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer_ft = optim.SGD([
         {'params': model.parameters(), 'weight_decay': 5e-4},
