@@ -11,6 +11,8 @@ import wandb
 import torch
 from torch import distributed
 
+from torch.nn.modules.distance import PairwiseDistance
+
 from .dataset.WebFace_Dataset import CASIAWebFace
 from Facial_verification.loss.margin import ArcMarginProduct
 from arcFacenet import SEResNet_IR
@@ -82,7 +84,7 @@ def train() :
         module=model, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
         find_unused_parameters=True)
     
-    margin = ArcMarginProduct(in_feature=128, out_feature=trainset.class_nums, s=32.0)
+    margin = ArcMarginProduct(in_feature=128, out_feature=train_dataset.class_nums, s=32.0)
     triplet = TripletLoss(device=device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer_ft = optim.SGD([
