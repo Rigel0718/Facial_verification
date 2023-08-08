@@ -14,7 +14,29 @@ import torch
 from tqdm import tqdm
 from PIL import Image
 from torch.utils.data import Dataset
+from collections import defaultdict
 
+def get_images_labels(FILE_PAtH) :
+    image_path_list = []
+    set_image_label = set()
+    for dirname,_, filenames in os.walk(FILE_PAtH) :
+        for filename in filenames :
+            img_path = os.path.join(dirname,filename)
+            image_path_list.append(img_path)
+            img_label= filename.split('_')[-2]
+            set_image_label.add(img_label)
+    
+    return image_path_list, list(set_image_label)
+
+def convert_to_df(image_file_paths) :
+    image_path_dict = defaultdict(list)
+    for dirname,_, filenames in os.walk(image_file_paths) :
+        for filename in filenames :
+            img_path = os.path.join(dirname,filename)
+            img_label= filename.split('_')[-2]
+            image_path_dict['img_path'].append(img_path)
+            image_path_dict['class'].append(img_label)
+            
 
 class TripletFaceDataset(Dataset):
     def __init__(self, root_dir, training_dataset_csv_path, num_triplets, epoch, num_human_identities_per_batch=32,
