@@ -103,8 +103,9 @@ def train() :
     for epoch in tqdm(range(1, total_epoch + 1), leave=True) :
         exp_lr_scheduler.step()
         model.train()
+        progress_bar = enumerate(tqdm(trainloader))
 
-        for data in trainloader :
+        for data in progress_bar :
             img, label = data[0].to(device), data[1].to(device) 
             label_num = label[1]
             optimizer_ft.zero_grad()
