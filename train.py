@@ -67,8 +67,8 @@ def train() :
             transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
         ])
     
-    trainset = Crawling_Nomal_Dataset(train_data_path, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+    train_dataset = Crawling_Nomal_Dataset(train_data_path, transform=transform)
+    trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
                                               shuffle=True, num_workers=8, drop_last=False)
     
     test_dataset = Crawling_Nomal_Dataset(test_path, transforms=transform)
