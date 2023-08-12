@@ -11,8 +11,9 @@ import wandb
 import torch
 from torch import distributed
 
+from torchvision.transforms import Resize
 from torch.nn.modules.distance import PairwiseDistance
-from facenet_pytorch import InceptionResnetV1
+from facenet_pytorch import InceptionResnetV1, fixed_image_standardization
 
 from loss.semihardtriplet import TripletLoss
 from backbone.cbam import SEModule
@@ -65,10 +66,16 @@ def train() :
     #            project='semi_hard_triplet',
     #            name='test1')
 
+    # transform = transforms.Compose([
+    #         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
+    #         transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
+    #     ])
     transform = transforms.Compose([
-            transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
-            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
-        ])
+        np.float32,
+        transforms.ToTensor(),  # range [0, 255] -> [0.0, 1.0]
+        Resize((160, 160)),
+        fixed_image_standardization
+    ])
     
     train_dataset = Crawling_Nomal_Dataset(train_data_path, transforms=transform)
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
@@ -122,7 +129,7 @@ def train() :
             
             feature = model(img)
             # output = margin(feature, label)
-            output_loss = criterion(feature, label)
+            output_loss = criterion(label, feature)
             # total_loss = criterion(output, label)
             
             output_loss.backward()

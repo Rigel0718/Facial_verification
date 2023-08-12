@@ -53,7 +53,7 @@ def TripletSemiHardLoss(y_true, y_pred, device, margin=1.0):
        """
 
     labels, embeddings = y_true, y_pred
-
+  
     # Reshape label tensor to [batch_size, 1].
     lshape = labels.shape
     labels = torch.reshape(labels, [lshape[0], 1])
