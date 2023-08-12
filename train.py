@@ -28,7 +28,7 @@ from utils.set_seed import setup_seed, seed_worker
 save_file_name = 'Test_first'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
-batch_size = 32
+batch_size = 10
 total_epoch = 10
 root = '/opt/ml/result'
 
@@ -64,6 +64,10 @@ def train() :
     os.makedirs(save_dir)
     # logging = init_log(save_dir)
     # _print = logging.info
+
+    wandb.init(entity='hi-ai',
+               project='semi_hard_triplet',
+               name='test1')
 
     transform = transforms.Compose([
             transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
@@ -143,7 +147,12 @@ def train() :
             print('accuracy : ',accuracy)
             print('recall : ', recall)
             print('f1 : ', f1)
-            print('precision : ', precision)    
+            print('precision : ', precision)   
+            wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
+
+if __name__ == '__main__' :
+    train()
+
             
 
                 
