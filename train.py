@@ -16,7 +16,7 @@ from facenet_pytorch import InceptionResnetV1
 
 from loss.semihardtriplet import TripletLoss
 from backbone.cbam import SEModule
-from .test.Validation_statistic import validation
+from test.Validation_statistic import validation
 from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 from utils.set_seed import setup_seed, seed_worker
 
@@ -70,7 +70,7 @@ def train() :
             transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))  # range [0.0, 1.0] -> [-1.0,1.0]
         ])
     
-    train_dataset = Crawling_Nomal_Dataset(train_data_path, transform=transform)
+    train_dataset = Crawling_Nomal_Dataset(train_data_path, transforms=transform)
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
                                               shuffle=True, num_workers=8, drop_last=False)
     

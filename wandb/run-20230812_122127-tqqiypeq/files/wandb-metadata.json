@@ -1,0 +1,85 @@
+{
+    "os": "Linux-4.4.0-210-generic-x86_64-with-glibc2.10",
+    "python": "3.8.0",
+    "heartbeatAt": "2023-08-12T12:21:27.694021",
+    "startedAt": "2023-08-12T12:21:27.104102",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "train.py",
+    "git": {
+        "remote": "https://github.com/Rigel0718/Facial_verification.git",
+        "commit": "834ac175b71f8623e0a604b80b0992a1d6fdee84"
+    },
+    "email": "pollux0718@gmail.com",
+    "root": "/opt/ml/Facial_verification",
+    "host": "39f047acbf73",
+    "username": "root",
+    "executable": "/opt/conda/envs/insight/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2200.072,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2200.072,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "total": 98.30496215820312,
+        "used": 64.3149299621582
+    },
+    "gpu": "Tesla V100-PCIE-32GB",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Tesla V100-PCIE-32GB",
+            "memory_total": 34089730048
+        }
+    ],
+    "memory": {
+        "total": 88.50577545166016
+    }
+}
