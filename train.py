@@ -26,8 +26,9 @@ save_file_name = 'Test_first'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
 batch_size = 10
-total_epoch = 10
+total_epoch = 100
 root = '/opt/ml/result'
+wandb_log = False
 
 try:
     rank = int(os.environ["RANK"])
@@ -55,16 +56,16 @@ def train() :
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # log init
-    save_dir = os.path.join(save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
-    if os.path.exists(save_dir):
-        raise NameError('model dir exists!')
-    os.makedirs(save_dir)
+    # save_dir = os.path.join('./workspace'+save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
+    # if os.path.exists(save_dir):
+    #     raise NameError('model dir exists!')
+    # os.makedirs(save_dir)
     # logging = init_log(save_dir)
     # _print = logging.info
-
-    # wandb.init(entity='hi-ai',
-    #            project='semi_hard_triplet',
-    #            name='test1')
+    if wandb_log : 
+        wandb.init(entity='hi-ai',
+                   project='semi_hard_triplet',
+                   name='test1')
 
     # transform = transforms.Compose([
     #         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
@@ -73,7 +74,7 @@ def train() :
     transform = transforms.Compose([
         np.float32,
         transforms.ToTensor(),  # range [0, 255] -> [0.0, 1.0]
-        Resize((160, 160)),
+        Resize((160, 160), antialias=True),
         fixed_image_standardization
     ])
     
@@ -82,7 +83,7 @@ def train() :
                                               shuffle=True, num_workers=8, drop_last=False)
     
     test_dataset = Crawling_Nomal_Dataset(test_path, transforms=transform)
-    test_data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=2, drop_last=False)
+    test_data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=2, drop_last=False)
 
 
 
@@ -153,7 +154,8 @@ def train() :
             print('recall : ', recall)
             print('f1 : ', f1)
             print('precision : ', precision)   
-            wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
+            if wandb_log :
+                wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
 
 if __name__ == '__main__' :
     train()
