@@ -1,12 +1,3 @@
-"""The original code was imported from tbmoon's 'facenet' repository:
-    https://github.com/tbmoon/facenet/blob/master/data_loader.py
-
-    The code was modified to speed up the triplet generation process by bypassing the dataframe.loc operation,
-     generate batches according to a set amount of human identities (classes) per triplet batch, and to
-     support .png, .jpg, and .jpeg files.
-"""
-
-
 import os
 import numpy as np
 import pandas as pd

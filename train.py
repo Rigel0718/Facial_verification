@@ -131,7 +131,9 @@ def train() :
 
             # vali_lfw
             model.eval()
-            validation(model, test_data_loader)
+            accuracy, recall, f1, precision = validation(model, test_data_loader)
+            print(accuracy, recall, f1, precision)
+            
 
                 
 
