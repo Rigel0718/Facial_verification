@@ -61,9 +61,9 @@ def train() :
     # logging = init_log(save_dir)
     # _print = logging.info
 
-    wandb.init(entity='hi-ai',
-               project='semi_hard_triplet',
-               name='test1')
+    # wandb.init(entity='hi-ai',
+    #            project='semi_hard_triplet',
+    #            name='test1')
 
     transform = transforms.Compose([
             transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
@@ -82,9 +82,9 @@ def train() :
     # model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
     model = InceptionResnetV1(classify=False, pretrained='vggface2')
 
-    model = torch.nn.parallel.DistributedDataParallel(
-        module=model, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
-        find_unused_parameters=True)
+    # model = torch.nn.parallel.DistributedDataParallel(
+    #     module=model, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
+    #     find_unused_parameters=True)
     
     # margin = ArcMarginProduct(in_feature=128, out_feature=train_dataset.class_nums, s=32.0)
     criterion = TripletLoss(device=device)    
@@ -104,7 +104,7 @@ def train() :
     exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[6, 11, 16], gamma=0.1)
 
     model = model.to(device)
-    margin = margin.to(device)
+    # margin = margin.to(device)
 
     total_iters = 0
 
@@ -114,13 +114,15 @@ def train() :
         progress_bar = enumerate(tqdm(trainloader))
 
         for data in progress_bar :
-            img, label = data[0].to(device), data[1].to(device) 
-            label_num = label[1]
+            print(data[1][1][1].shape)
+            img, label = data[1][0].to(device), data[1][1][1].to(device)
+            
+
             optimizer_ft.zero_grad()
             
             feature = model(img)
-            output = margin(feature, label)
-            output_loss = criterion(feature, label_num)
+            # output = margin(feature, label)
+            output_loss = criterion(feature, label)
             # total_loss = criterion(output, label)
             
             output_loss.backward()
