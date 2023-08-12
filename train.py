@@ -14,13 +14,9 @@ from torch import distributed
 from torch.nn.modules.distance import PairwiseDistance
 from facenet_pytorch import InceptionResnetV1
 
-from .dataset.WebFace_Dataset import CASIAWebFace
-from Facial_verification.loss.margin import ArcMarginProduct
-from arcFacenet import SEResNet_IR
-
 from loss.semihardtriplet import TripletLoss
 from backbone.cbam import SEModule
-from test.Validation_statistic import validation
+from .test.Validation_statistic import validation
 from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 from utils.set_seed import setup_seed, seed_worker
 
