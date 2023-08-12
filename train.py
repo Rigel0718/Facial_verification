@@ -103,11 +103,11 @@ def train() :
     #     ], lr=0.1, momentum=0.9, nesterov=True)
     optimizer_ft = optim.SGD(
             params=model.parameters(),
-            lr=0.1,
+            lr=1e-6,
             momentum=0.9,
             dampening=0,
             nesterov=False,
-            weight_decay=1e-5
+            weight_decay=5e-4
         )
     exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[6, 11, 16], gamma=0.1)
 
