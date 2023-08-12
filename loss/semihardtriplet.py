@@ -114,7 +114,7 @@ class TripletLoss(nn.Module):
         super().__init__()
         self.device = device
 
-    def forward(self, input, target, **kwargs):
+    def forward(self, target, input, **kwargs):
         return TripletSemiHardLoss(target, input, self.device)
 
 if __name__ == '__main__' :

@@ -12,6 +12,7 @@ import torch
 from torch import distributed
 
 from torch.nn.modules.distance import PairwiseDistance
+from facenet_pytorch import InceptionResnetV1
 
 from .dataset.WebFace_Dataset import CASIAWebFace
 from Facial_verification.loss.margin import ArcMarginProduct
@@ -25,8 +26,8 @@ from utils.set_seed import setup_seed, seed_worker
 
 # setting
 save_file_name = 'Test_first'
-train_data_path = 'file_path = /opt/ml/data/CASIA_WEBFAECE/CASIA-WebFace_crop'
-test_path = ''
+train_data_path = '/opt/ml/data/celeb/train'
+test_path = '/opt/ml/data/celeb/test'
 batch_size = 32
 total_epoch = 10
 root = '/opt/ml/result'
@@ -78,26 +79,33 @@ def train() :
 
 
 
-    model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
+    # model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
+    model = InceptionResnetV1(classify=False, pretrained='vggface2')
 
     model = torch.nn.parallel.DistributedDataParallel(
         module=model, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
         find_unused_parameters=True)
     
-    margin = ArcMarginProduct(in_feature=128, out_feature=train_dataset.class_nums, s=32.0)
-    triplet = TripletLoss(device=device)    
-    criterion = torch.nn.CrossEntropyLoss().to(device)
-    optimizer_ft = optim.SGD([
-        {'params': model.parameters(), 'weight_decay': 5e-4},
-        {'params': margin.parameters(), 'weight_decay': 5e-4}
-        ], lr=0.1, momentum=0.9, nesterov=True)
+    # margin = ArcMarginProduct(in_feature=128, out_feature=train_dataset.class_nums, s=32.0)
+    criterion = TripletLoss(device=device)    
+    # criterion = torch.nn.CrossEntropyLoss().to(device)
+    # optimizer_ft = optim.SGD([
+    #     {'params': model.parameters(), 'weight_decay': 5e-4},
+    #     {'params': margin.parameters(), 'weight_decay': 5e-4}
+    #     ], lr=0.1, momentum=0.9, nesterov=True)
+    optimizer_ft = optim.SGD(
+            params=model.parameters(),
+            lr=0.1,
+            momentum=0.9,
+            dampening=0,
+            nesterov=False,
+            weight_decay=1e-5
+        )
     exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[6, 11, 16], gamma=0.1)
 
     model = model.to(device)
     margin = margin.to(device)
 
-    best_lfw_acc = 0.0
-    best_lfw_iters = 0
     total_iters = 0
 
     for epoch in tqdm(range(1, total_epoch + 1), leave=True) :
@@ -112,27 +120,30 @@ def train() :
             
             feature = model(img)
             output = margin(feature, label)
-            output_loss = triplet(feature, label_num)
-            total_loss = criterion(output, label)
+            output_loss = criterion(feature, label_num)
+            # total_loss = criterion(output, label)
             
-            # ouput_loss.backward()
-            total_loss.backward()
+            output_loss.backward()
+            # total_loss.backward()
             optimizer_ft.step()
             
 
-            total_iters += 1
+            # total_iters += 1
 
-            if total_iters % 100 == 0 :
-                _, predict = torch.max(output.data, 1)
-                total = label.size(0)
-                correct = (np.array(predict.cpu()) == np.array(label.data.cpu())).sum()
+            # if total_iters % 100 == 0 :
+            #     _, predict = torch.max(output.data, 1)
+            #     total = label.size(0)
+            #     correct = (np.array(predict.cpu()) == np.array(label.data.cpu())).sum()
 
             # save_model
 
-            # vali_lfw
+            # validation
             model.eval()
             accuracy, recall, f1, precision = validation(model, test_data_loader)
-            print(accuracy, recall, f1, precision)
+            print('accuracy : ',accuracy)
+            print('recall : ', recall)
+            print('f1 : ', f1)
+            print('precision : ', precision)    
             
 
                 
