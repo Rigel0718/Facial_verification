@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "train.py", line 150, in <module>
-    train()
-  File "train.py", line 73, in train
-    train_dataset = Crawling_Nomal_Dataset(train_data_path, transform=transform)
-TypeError: __init__() got an unexpected keyword argument 'transform'
