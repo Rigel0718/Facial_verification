@@ -48,8 +48,8 @@ except KeyError:
     )
 
 
-def save_model(model, file_name='test_model.pt'):
-    output_path = os.path.join(root, file_name)
+def save_model(model, epoch, file_name='test_model.pt'):
+    output_path = os.path.join(file_name, f'{epoch}.pt')
     torch.save(model, output_path)
 
 def train() :
@@ -66,7 +66,7 @@ def train() :
     if wandb_log : 
         wandb.init(entity='hi-ai',
                    project='semi_hard_triplet',
-                   name='test2_lr_1e3')
+                   name=save_file_name)
 
     # transform = transforms.Compose([
     #         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
@@ -154,7 +154,7 @@ def train() :
         if wandb_log :
                 wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
         if (epoch + 1) % save_num == 0 :
-            torch.save(model.state_dict(), save_dir) 
+            save_model(model, save_dir)
 
 if __name__ == '__main__' :
     train()
