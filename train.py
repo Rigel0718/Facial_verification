@@ -125,7 +125,7 @@ def train() :
         progress_bar = enumerate(tqdm(trainloader))
 
         for data in progress_bar :
-            # print(data[1][1][1].shape)
+            
             img, label = data[1][0].to(device), data[1][1][1].to(device)
             
 

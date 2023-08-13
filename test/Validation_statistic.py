@@ -76,7 +76,6 @@ def validation(model, vali_data_loader, threshold=None, get_df=False) :
     negative_df = model_df.get_negative_df()
     facenet_label_df = model_df.concate()
     model_inference_df = model_df.get_inference_df(model_path2embedding)
-    print(model_inference_df.head())
 
     p_mean, p_std, n_mean, n_std = calculate_mean_std(model_inference_df)
     if threshold is None :
