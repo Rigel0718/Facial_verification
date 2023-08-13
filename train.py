@@ -25,10 +25,11 @@ from utils.set_seed import setup_seed, seed_worker
 save_file_name = 'Test_first'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
-batch_size = 10
-total_epoch = 100
+batch_size = 128
+total_epoch = 15
 root = '/opt/ml/result'
-wandb_log = False
+wandb_log = True
+save_num = 5
 
 try:
     rank = int(os.environ["RANK"])
@@ -56,16 +57,16 @@ def train() :
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # log init
-    # save_dir = os.path.join('./workspace'+save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
-    # if os.path.exists(save_dir):
-    #     raise NameError('model dir exists!')
+    save_dir = os.path.join('./workspace'+save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
+    if os.path.exists(save_dir):
+        raise NameError('model dir exists!')
     # os.makedirs(save_dir)
     # logging = init_log(save_dir)
     # _print = logging.info
     if wandb_log : 
         wandb.init(entity='hi-ai',
                    project='semi_hard_triplet',
-                   name='test1')
+                   name='test2_lr_1e3')
 
     # transform = transforms.Compose([
     #         transforms.ToTensor(),  # range [0, 255] -> [0.0,1.0]
@@ -103,11 +104,11 @@ def train() :
     #     ], lr=0.1, momentum=0.9, nesterov=True)
     optimizer_ft = optim.SGD(
             params=model.parameters(),
-            lr=1e-6,
+            lr=1e-3,
             momentum=0.9,
             dampening=0,
             nesterov=False,
-            weight_decay=5e-4
+            weight_decay=1e-4
         )
     exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[6, 11, 16], gamma=0.1)
 
@@ -122,7 +123,7 @@ def train() :
         progress_bar = enumerate(tqdm(trainloader))
 
         for data in progress_bar :
-            print(data[1][1][1].shape)
+            # print(data[1][1][1].shape)
             img, label = data[1][0].to(device), data[1][1][1].to(device)
             
 
@@ -148,14 +149,12 @@ def train() :
             # save_model
 
             # validation
-            model.eval()
-            accuracy, recall, f1, precision = validation(model, test_data_loader)
-            print('accuracy : ',accuracy)
-            print('recall : ', recall)
-            print('f1 : ', f1)
-            print('precision : ', precision)   
-            if wandb_log :
+        model.eval()
+        accuracy, recall, f1, precision = validation(model, test_data_loader)  
+        if wandb_log :
                 wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
+        if (epoch + 1) % save_num == 0 :
+            torch.save(model.state_dict(), save_dir) 
 
 if __name__ == '__main__' :
     train()
