@@ -54,6 +54,8 @@ def save_model(model, epoch, file_name='test_model.pt'):
 
 def train() :
 
+    setup_seed(22)
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # log init
