@@ -59,10 +59,9 @@ def train() :
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # log init
-    save_dir = os.path.join('./workspace'+save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
-    if os.path.exists(save_dir):
-        raise NameError('model dir exists!')
-    # os.makedirs(save_dir)
+    save_dir = os.path.join('./workspace'+ save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
+    
+    os.makedirs(save_dir)
     # logging = init_log(save_dir)
     # _print = logging.info
     if wandb_log : 
