@@ -22,7 +22,7 @@ from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 from utils.set_seed import setup_seed, seed_worker
 
 # setting
-save_file_name = 'bat64_lr_7e-4'
+save_file_name = 're_bat64_lr_7e-4'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
 batch_size = 64
@@ -52,8 +52,8 @@ def save_model(model, epoch, file_name='test_model.pt', final=False):
     if final :
         output_path = os.path.join(file_name, 'final.pt')
     else :
-        output_path = os.path.join(file_name, f'{epoch}.pt')
-    torch.save(model, output_path)
+        output_path = os.path.join(file_name, f'{epoch+1}.pt')
+    torch.save(model.state_dict(), output_path)
 
 def train() :
 
