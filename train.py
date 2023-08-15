@@ -22,10 +22,10 @@ from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 from utils.set_seed import setup_seed, seed_worker
 
 # setting
-save_file_name = 'lr_1e-3'
+save_file_name = 'bat64_lr_7e-4'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
-batch_size = 128
+batch_size = 64
 total_epoch = 15
 root = '/opt/ml/result'
 wandb_log = True
@@ -48,8 +48,11 @@ except KeyError:
     )
 
 
-def save_model(model, epoch, file_name='test_model.pt'):
-    output_path = os.path.join(file_name, f'{epoch}.pt')
+def save_model(model, epoch, file_name='test_model.pt', final=False):
+    if final :
+        output_path = os.path.join(file_name, 'final.pt')
+    else :
+        output_path = os.path.join(file_name, f'{epoch}.pt')
     torch.save(model, output_path)
 
 def train() :
@@ -101,7 +104,7 @@ def train() :
     #     ], lr=0.1, momentum=0.9, nesterov=True)
     optimizer_ft = optim.SGD(
             params=model.parameters(),
-            lr=1e-3,
+            lr=7e-4,
             momentum=0.9,
             dampening=0,
             nesterov=False,
@@ -111,6 +114,8 @@ def train() :
 
     model = model.to(device)
     # margin = margin.to(device)
+
+    best_acc = 0
 
     for epoch in tqdm(range(1, total_epoch + 1), leave=True) :
         exp_lr_scheduler.step()
@@ -140,6 +145,9 @@ def train() :
                 wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
         if (epoch + 1) % save_num == 0 :
             save_model(model, epoch ,save_dir)
+        if best_acc < accuracy :
+            best_acc = accuracy
+            save_model(model, epoch, save_dir, final=True)
 
 if __name__ == '__main__' :
     train()
