@@ -22,7 +22,7 @@ from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
 from utils.set_seed import setup_seed, seed_worker
 
 # setting
-save_file_name = 're_bat64_lr_7e-4'
+save_file_name = 're_bat64_lr_1e-3'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
 batch_size = 64
@@ -104,7 +104,7 @@ def train() :
     #     ], lr=0.1, momentum=0.9, nesterov=True)
     optimizer_ft = optim.SGD(
             params=model.parameters(),
-            lr=7e-4,
+            lr=1e-3,
             momentum=0.9,
             dampening=0,
             nesterov=False,
