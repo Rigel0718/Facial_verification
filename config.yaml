@@ -1,0 +1,16 @@
+save_file_name : 're_bat64_lr_le-3'
+train_data_path : '/opt/ml/data/celeb/train'
+test_path : '/opt/ml/data/celeb/test'
+batch_size : 64
+total_epoch : 15
+save_num : 5
+seed_num : 22
+learning_rate : 1e-3
+weight_decay : 1e-4
+wandb_logging : False
+wandb_entity : 'hi-ai'
+wandb_project : 'semi_hard_triplet'
+validation : True
+  
+  
+  
