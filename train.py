@@ -12,20 +12,19 @@ import torch
 from torch import distributed
 
 from torchvision.transforms import Resize
-from torch.nn.modules.distance import PairwiseDistance
 from facenet_pytorch import InceptionResnetV1, fixed_image_standardization
 
 from loss.semihardtriplet import TripletLoss
 from backbone.cbam import SEModule
 from test.Validation_statistic import validation
 from dataset.Crawling_Dataset import Crawling_Nomal_Dataset
-from utils.set_seed import setup_seed, seed_worker
+from utils.set_seed import setup_seed
 
 # setting
-save_file_name = 'lr_1e-3'
+save_file_name = 're_bat64_lr_1e-3'
 train_data_path = '/opt/ml/data/celeb/train'
 test_path = '/opt/ml/data/celeb/test'
-batch_size = 128
+batch_size = 64
 total_epoch = 15
 root = '/opt/ml/result'
 wandb_log = True
@@ -48,9 +47,12 @@ except KeyError:
     )
 
 
-def save_model(model, epoch, file_name='test_model.pt'):
-    output_path = os.path.join(file_name, f'{epoch}.pt')
-    torch.save(model, output_path)
+def save_model(model, epoch, file_name='test_model.pt', final=False):
+    if final :
+        output_path = os.path.join(file_name, 'final.pt')
+    else :
+        output_path = os.path.join(file_name, f'{epoch+1}.pt')
+    torch.save(model.state_dict(), output_path)
 
 def train() :
 
@@ -62,8 +64,7 @@ def train() :
     save_dir = os.path.join('./workspace/'+ save_file_name+ '_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
 
     os.makedirs(save_dir)
-    # logging = init_log(save_dir)
-    # _print = logging.info
+
     if wandb_log : 
         wandb.init(entity='hi-ai',
                    project='semi_hard_triplet',
@@ -87,10 +88,6 @@ def train() :
 
     # model = SEResNet_IR(50, feature_dim=128, mode='se_ir')
     model = InceptionResnetV1(classify=False, pretrained='vggface2')
-
-    # model = torch.nn.parallel.DistributedDataParallel(
-    #     module=model, broadcast_buffers=False, device_ids=[local_rank], bucket_cap_mb=16,
-    #     find_unused_parameters=True)
     
     # margin = ArcMarginProduct(in_feature=128, out_feature=train_dataset.class_nums, s=32.0)
     criterion = TripletLoss(device=device)    
@@ -99,6 +96,7 @@ def train() :
     #     {'params': model.parameters(), 'weight_decay': 5e-4},
     #     {'params': margin.parameters(), 'weight_decay': 5e-4}
     #     ], lr=0.1, momentum=0.9, nesterov=True)
+
     optimizer_ft = optim.SGD(
             params=model.parameters(),
             lr=1e-3,
@@ -111,6 +109,8 @@ def train() :
 
     model = model.to(device)
     # margin = margin.to(device)
+
+    best_acc = 0
 
     for epoch in tqdm(range(1, total_epoch + 1), leave=True) :
         exp_lr_scheduler.step()
@@ -127,10 +127,7 @@ def train() :
             feature = model(img)
             # output = margin(feature, label)
             output_loss = criterion(label, feature)
-            # total_loss = criterion(output, label)
-            
             output_loss.backward()
-            # total_loss.backward()
             optimizer_ft.step()
 
         # validation
@@ -140,6 +137,9 @@ def train() :
                 wandb.log({'accuracy' : accuracy, 'recall' : recall, 'f1' : f1, 'precision' : precision})
         if (epoch + 1) % save_num == 0 :
             save_model(model, epoch ,save_dir)
+        if best_acc < accuracy :
+            best_acc = accuracy
+            save_model(model, epoch, save_dir, final=True)
 
 if __name__ == '__main__' :
     train()

@@ -1,0 +1,6 @@
+opencv
+facenet_pytorch
+tqdm
+pandas
+scikit-learn
+wandb
